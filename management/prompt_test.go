@@ -14,15 +14,25 @@ func TestPrompt(t *testing.T) {
 		t.Logf("%v\n", ps)
 	})
 
+	falseV := false
+	trueV := true
+
 	t.Run("Update", func(t *testing.T) {
-		defer func() {
+		t.Cleanup(func() {
 			m.Prompt.Update(&Prompt{
 				UniversalLoginExperience: "classic",
+				IdentifierFirst:          &falseV,
 			})
-		}()
-		expected := "new"
+		})
+
+		expected := &Prompt{
+			UniversalLoginExperience: "new",
+			IdentifierFirst:          &trueV,
+		}
+
 		err := m.Prompt.Update(&Prompt{
-			UniversalLoginExperience: expected,
+			UniversalLoginExperience: expected.UniversalLoginExperience,
+			IdentifierFirst:          expected.IdentifierFirst,
 		})
 		if err != nil {
 			t.Error(err)
@@ -32,8 +42,11 @@ func TestPrompt(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		if ps.UniversalLoginExperience != expected {
-			t.Errorf("unexpected output. have %v, expected %v", ps.UniversalLoginExperience, expected)
+		if ps.UniversalLoginExperience != expected.UniversalLoginExperience {
+			t.Errorf("unexpected output. have %v, expected %v", ps.UniversalLoginExperience, expected.IdentifierFirst)
+		}
+		if ps.IdentifierFirst != expected.IdentifierFirst {
+			t.Errorf("unexpected output. have %v, expected %v", ps.IdentifierFirst, expected.IdentifierFirst)
 		}
 		t.Logf("%v\n", ps)
 	})
